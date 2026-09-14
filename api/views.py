@@ -36,6 +36,8 @@ def home(request):
     data = [{
         'id': product.id,
         'name': product.name,
+        'description': product.description,
+        'price': str(product.price),
     } for product in products]
 
     return JsonResponse(data, safe=False)
