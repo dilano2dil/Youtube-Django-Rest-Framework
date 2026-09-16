@@ -9,19 +9,24 @@ from .serializers import ProductSerializer1, ProductSerializer2
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def product_api_view(request, pk=None):
+    context = {'request': request}
     if request.method == 'GET':
         if pk is not None:
             try:
                 product = get_object_or_404(Product, pk=pk)
-                serializer = ProductSerializer1(product)
+                serializer = ProductSerializer1(product, context=context)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Product.DoesNotExist:
                 return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
         products = Product.objects.all()
-        serializer = ProductSerializer1(products, many=True)
+        serializer = ProductSerializer1(products, many=True, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
+        # data = request.data
+        # name = data.get('name')
+        # if "iPhone" in name:
+        #     return Response({'error': 'Unauthorized product in our system'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = ProductSerializer1(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
